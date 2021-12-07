@@ -32,30 +32,34 @@ public class BingoPlayer
 
     public void StartPlaying()
     {
-        var bingo = false;
+        var playingBoards = boards.Where(b => !b.BingoReached);
 
-        for (var i = 0; i < moves.Count && !bingo; i++)
+        for (var i = 0; i < moves.Count; i++)
         {
             var move = moves[i];
 
             Console.WriteLine($"Calling out {move}.");
-
-            foreach (var board in boards)
+            
+            foreach (var board in playingBoards)
                 board.MakeMove(move);
 
-            for (var b = 0; b < boards.Count; b++)
+            foreach (var board in playingBoards)
             {
-                var board = boards[b];
-                var localBingo = board.BingoReached();
+                var localBingo = board.CheckBingoReached();
 
                 if (localBingo)
                 {
-                    Console.WriteLine($"Bingo! for board {b}.");
-                    bingo = true;
+                    Console.WriteLine($"Bingo! for board. {playingBoards.Count()} boards left.");
 
-                    Console.WriteLine($"Res: {board.GetUnmarkedSum() * move}.");
+                    if (playingBoards.Count() <= 2) // Apparently two boards are left when 87 is called, and both get BINGO!
+                    {
+                        Console.WriteLine($"Finals reached.");
+                        Console.WriteLine($"Res: {board.GetUnmarkedSum() * move}.");
+                    }
                 }
             }
+
+            playingBoards = boards.Where(b => !b.BingoReached);
         }
 
         Console.WriteLine("\nEnd of game.");

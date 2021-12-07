@@ -7,7 +7,7 @@ public class BingoBoard
 {
     List<int> numbers;
     List<int> marked;
-
+    
     public BingoBoard(IEnumerable<int> nums)
     {
         if (nums.Count() != 25)
@@ -15,18 +15,27 @@ public class BingoBoard
 
         numbers = new List<int>(nums);
         marked = new List<int>();
+
+        BingoReached = false;
     }
+
+    public bool BingoReached { get; private set; }
 
     public void MakeMove(int move)
     {
         marked.Add(move);
     }
 
-    public bool BingoReached()
+    public bool CheckBingoReached()
     {
         var lineRange = Enumerable.Range(0, 4);
-        return lineRange.Any(SpellsBingoHorizontal) 
+        var res = lineRange.Any(SpellsBingoHorizontal) 
             || lineRange.Any(SpellsBingoVertical);
+
+        if (res)
+            BingoReached = true;
+
+        return res;
     }
 
     public int GetUnmarkedSum()
